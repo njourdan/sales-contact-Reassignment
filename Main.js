@@ -6,11 +6,11 @@ import { stringify } from 'csv-stringify';
 
 async function main(cid) {
   let contact = await limitedInsightlyCall(`Contact/${cid}`, {});
-  if(!contact.ORGANISATION_ID){
-  
+  if (!contact.ORGANISATION_ID) {
+    return { type: 'noWinner', cid: cid }; // Handle case where there is no organization ID
   }
+  
   let conOrg = await limitedInsightlyCall(`Organisation/${contact.ORGANISATION_ID}`, {});
-
   const filteredLinks = conOrg.LINKS.filter(link => link.LINK_OBJECT_NAME === 'Contact');
   const orgContactIDS = filteredLinks.map(link => link.LINK_OBJECT_ID);
 
@@ -27,7 +27,7 @@ async function main(cid) {
   } else if (win.length === 1) {
     return { type: 'winner', cid: cid, winner: win[0].user };
   } else if (win.length > 1) {
-    return { type: 'tie', cid: cid };
+    return { type: 'tie', cid: cid, owners: win.map(w => w.user) };
   }
 }
 
@@ -70,12 +70,16 @@ async function processContacts() {
         console.log(cid)
         const result = await main(cid);
         if (result.type === 'winner') {
-            console.log('Winner Winner Chicken Dinner')
+          console.log('Winner Winner Chicken Dinner')
           winnerData.push({ ContactID: result.cid, Winner: result.winner });
         } else if (result.type === 'noWinner') {
           noWinnerData.push({ Contact: result.cid });
         } else if (result.type === 'tie') {
-          tieData.push({ ContactID: result.cid });
+          const tieEntry = { ContactID: result.cid };
+          result.owners.forEach((owner, index) => {
+            tieEntry[`Owner${index + 1}`] = owner;
+          });
+          tieData.push(tieEntry);
         }
       }
 
@@ -92,7 +96,14 @@ async function processContacts() {
       });
 
       // Write to tie.csv
-      stringify(tieData, { header: true, columns: { ContactID: 'ContactID' } }, (err, output) => {
+      const tieColumns = { ContactID: 'ContactID' };
+      if (tieData.length > 0) {
+        const maxOwners = Math.max(...tieData.map(entry => Object.keys(entry).length - 1));
+        for (let i = 1; i <= maxOwners; i++) {
+          tieColumns[`Owner${i}`] = `Owner${i}`;
+        }
+      }
+      stringify(tieData, { header: true, columns: tieColumns }, (err, output) => {
         if (err) throw err;
         fs.writeFileSync('tie.csv', output);
       });

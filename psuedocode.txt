@@ -1,9 +1,11 @@
-1. Get Contact
-2. Get Organization from Contact
-3. Get all Related Contacts from the Organization
-4. Get Contact data from the related Contacts
+1. First contact in list
+2. search list for contacts with same Organization
+3. Get all Contacts from the Organization
 5. From the above information turn the contacts into an array
-6. Reduce the array down to be Sales person: count, unless they are 0, then omit
-7. write the winner to the "reassignment.csv",
-8. check if there is no winner, then write them to the noOrgwinner.csv with their Contact ID, and name
-9. if tie,  write to the ties.csv, 
+6. Reduce the array down to be SalesPerson: count, unless they are 0, then omit
+7. if there is more than 1 sales person, evaulate the highest
+    7a. if there is a contact to be reassigned write to winner.csv
+8. If there is a tie
+    8a. write the contacts to tie.csv
+9. if it is solo
+    9a. write to solo.csv
