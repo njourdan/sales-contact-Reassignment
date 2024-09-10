@@ -1,7 +1,6 @@
 {
   "name": "sales-contact-reassignment",
   "version": "1.0.0",
-  "description": "",
   "type": "module",
   "main": "Main.js",
   "scripts": {
@@ -16,5 +15,7 @@
     "csv-parser": "^3.0.0",
     "csv-stringify": "^6.5.0",
     "dotenv": "^16.4.5"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }

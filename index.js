@@ -1,6 +1,6 @@
 import {parse} from 'csv'
 import fs from 'fs'
-
+const contactExport = []
 fs.createReadStream('src/Contacts.csv')
 .pipe(
 parse({
@@ -8,11 +8,11 @@ parse({
         trim: true
 }))
 .on('data', (row) => {
-    console.log(row);
+    contactExport.push(row)
   })
   .on('error', (err) => {
-    console.error(err);
+    console.error(err)
   })
   .on('end', () => {
-    console.log(data.length);
+    console.log(contactExport.length)
   });
