@@ -1,4 +1,4 @@
-import { processCSVs , processContacts, dedupeAndTransform } from './helpers/processCSVs.js';
+import { winnerTransformArray , processContacts, dedupeAndTransform, writeToOutputCSV } from './helpers/processCSVs.js';
 const saleUserIDs =[2109229,2197147,1930596,1871085,2012130,2104545,2200280,1871087,1871113,1871094,1871088]
 async function main() {
   const winner = []
@@ -7,7 +7,7 @@ async function main() {
   try {
 
     const { allContacts, reallocate } = await processContacts();
-    for (let i = 0; i < reallocate.length; i++) {
+    for (let i = 0; i < 100; i++) {
       console.log("Iteration: " + i);
     
     let matches = allContacts.filter(contact => contact.OrganizationRecordId === reallocate[i].OrganizationRecordId)
@@ -20,10 +20,13 @@ async function main() {
       // console.log(reallocate[i].ContactOwner)
       winner.push(reallocate[i])
     }else if(result.length > 1){
-      console.log(result)
+      
     }
     }
-   
+    console.log(tie)
+    let winnerinput = winnerTransformArray(winner)
+    // let tieinput = tieTransformArray
+    writeToOutputCSV('winner',winnerinput)
 
 
 
@@ -44,7 +47,8 @@ async function main() {
   } catch (error) {
     console.error(`Error in main: ${error}`);
   }
-  console.log(winner.length)
+ 
+
 }
 
 main();
