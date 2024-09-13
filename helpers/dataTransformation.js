@@ -32,22 +32,40 @@ export function dedupeAndTransform(arr, validIds) {
   return result;
 }
 export function winnerTransformArray(data) {
-   let newdata ={
-        recordId: data['﻿RecordId'], // Use the key to extract 'RecordId'
-        newContactOwner: data.mostContactsInOrg[0].user, // Extract 'ContactOwner'
-        name: `${data.FirstName} ${data.LastName}`.trim(), // Combine 'FirstName' and 'LastName'
-        reason: `${data.mostContactsInOrg[0].user} had ${data.mostContactsInOrg[0].count} out of ${data.totalContactsInOrg} total contacts`
-}
-return newdata
-
-      };
-
-  export function tieTransformArray(data) {
-    return data.map(item => {
-      return {
-        recordId: item['﻿RecordId'], // Use the key to extract 'RecordId'
-        contactOwner: item.ContactOwner, // Extract 'ContactOwner'
-        name: `${item.FirstName} ${item.LastName}`.trim() // Combine 'FirstName' and 'LastName'
-      };
-    });
+  let newdata = {
+    recordId: data['﻿RecordId'], // Use the key to extract 'RecordId'
+    newContactOwner: data.mostContactsInOrg[0].user, // Extract 'ContactOwner'
+    name: `${data.FirstName} ${data.LastName}`.trim(), // Combine 'FirstName' and 'LastName'
+    reason: `${data.mostContactsInOrg[0].user} had ${data.mostContactsInOrg[0].count} out of ${data.totalContactsInOrg} total contacts`
   }
+  return newdata
+
+};
+
+export function tieTransformArray(data) {
+  let newdata = {
+    recordId: data['﻿RecordId'], // Use the key to extract 'RecordId'
+    contactOwner: data.mostContactsInOrg.map(contact => contact.user).join(' / '), // Extract 'ContactOwner'
+    name: `${data.FirstName} ${data.LastName}`.trim(), // Combine 'FirstName' and 'LastName'
+    reason: `the users ${data.mostContactsInOrg.map(contact => contact.user).join(' / ')} had equal amounts of contacts in the Organization`
+  }
+  return newdata
+};
+export function noneTransformArray(data) {
+  let newdata = {
+    recordId: data['﻿RecordId'], // Use the key to extract 'RecordId'
+    contactOwner: '',
+    name: `${data.FirstName} ${data.LastName}`.trim(), // Combine 'FirstName' and 'LastName'
+    reason: `No one owns a contact in this Organization`
+  }
+  return newdata
+};
+export function noOrgTransformArray(data) {
+  let newdata = {
+    recordId: data['﻿RecordId'], // Use the key to extract 'RecordId'
+    contactOwner: '',
+    name: `${data.FirstName} ${data.LastName}`.trim(), // Combine 'FirstName' and 'LastName'
+    reason: `This Contact has no Orgnization`
+  }
+  return newdata
+};
