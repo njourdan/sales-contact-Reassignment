@@ -5,63 +5,37 @@ async function main() {
   const winner = []
   const tie = []
   const none = []
-  try {
-
     const { allContacts, reallocate } = await processContacts();
     for (let i = 0; i < 250; i++) {
-    
+    if(reallocate[i].OrganizationRecordId){
     let matches = allContacts.filter(contact => contact.OrganizationRecordId === reallocate[i].OrganizationRecordId)
-    let result = await dedupeAndTransform(matches,saleUserIDs)
-    // console.log(reallocate[i].ContactOwner)
-    let isTie = result.length > 0 ? (result.length === 1 ? 1 : 2) : 0; // 0 for none, 1 for winner, and 2 for tie
-    if(!reallocate[i].OrganizationRecordId){
-      console.log("skiping ",reallocate[i].FirstName)
-      continue // skip the loop if there is no organization id
+
+    let salesOrgContactCount = await dedupeAndTransform(matches,saleUserIDs) //
+
+    let totalContactsInOrg = salesOrgContactCount.reduce((acc, cur) => acc + cur.count, 0);
+
+    let mostContactsInOrg = salesOrgContactCount.filter(obj => obj.count === Math.max(...salesOrgContactCount.map(item => item.count)));
+
+    reallocate[i].salesOrgContactCount= salesOrgContactCount
+    reallocate[i].totalContactsInOrg = totalContactsInOrg
+    reallocate[i].mostContactsInOrg = mostContactsInOrg
+    if(reallocate[i].totalContactsInOrg == 0){
+      //logic for N/A
+
+    }else if(reallocate[i].salesOrgContactCount.length == 1){
+      // logic for win
+      const winnerInput = await winnerTransformArray(reallocate[i])
+      console.log(winnerInput)
+      winner.push(winnerInput)
+    }else if(reallocate[i].salesOrgContactCount.length > 1){
+      // logic for tie
     }
-    if(isTie == 0){
-      // none
-      none.push(reallocate[i])
-    }else if(isTie == 1){
-      // winner
-      reallocate[i].ContactOwner = result[0].user
-      reallocate[i].reason = result
-      // console.log(reallocate[i].reason)
-      winner.push(reallocate[i])
-    }else if(isTie > 1){
-      //tie
-      // console.log(reallocate[i].OrganizationRecordId)
-      // console.log(result)
-      reallocate[i].reason = result
-      tie.push(reallocate)
+    } else {
+      // no org
+
     }
-    }
-    // console.log(tie)
+    } 
+    writeToOutputCSV('winner',winner)
 
-    let winnerinput = winnerTransformArray(winner)
-    // let tieinput = tieTransformArray
-    writeToOutputCSV('winner',winnerinput)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  } catch (error) {
-    console.error(`Error in main: ${error}`);
   }
- 
-
-}
-
 main();

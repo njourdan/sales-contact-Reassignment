@@ -26,24 +26,22 @@ export function dedupeAndTransform(arr, validIds) {
   }));
 
   const maxCount = Math.max(...result.map(obj => obj.count));
-  const total = result.reduce((acc, cur) => acc + cur.count, 0);
-  if(result.length > 0 ){
-    // console.log(arr)
-  console.log(maxCount, total)}
   const largest = result.filter(obj => obj.count === maxCount);
 
 
-  return largest;
+  return result;
 }
 export function winnerTransformArray(data) {
-    return data.map(item => {
-      return {
-        recordId: item['﻿RecordId'], // Use the key to extract 'RecordId'
-        contactOwner: item.ContactOwner, // Extract 'ContactOwner'
-        name: `${item.FirstName} ${item.LastName}`.trim() // Combine 'FirstName' and 'LastName'
+   let newdata ={
+        recordId: data['﻿RecordId'], // Use the key to extract 'RecordId'
+        newContactOwner: data.mostContactsInOrg[0].user, // Extract 'ContactOwner'
+        name: `${data.FirstName} ${data.LastName}`.trim(), // Combine 'FirstName' and 'LastName'
+        reason: `${data.mostContactsInOrg[0].user} had ${data.mostContactsInOrg[0].count} out of ${data.totalContactsInOrg} total contacts`
+}
+return newdata
+
       };
-    });
-  }
+
   export function tieTransformArray(data) {
     return data.map(item => {
       return {

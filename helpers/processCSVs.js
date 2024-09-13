@@ -34,9 +34,6 @@ export async function processContacts() {
 export function writeToOutputCSV(filename, array) {
 
   const header = Object.keys(array[0]).join(",")+ "\n";
-
-  // console.log(header)
-
   let csv = header;
   csv += array.map(record => {
     // Merge all values from the record object into a single string
